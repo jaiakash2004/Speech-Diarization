@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Diarization - Firepower</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>Speech Diarization</h1>
+            <p>Upload an audio file and get a segmented transcript with speaker labels.</p>
+        </header>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" accept="audio/*" required>
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </form>
+        </section>
+
+        <!-- Transcript Section (conditionally rendered when there's a transcript) -->
+        {% if transcript %}
+            <section class="transcript-section">
+                <h2>Transcript</h2>
+                {% for speaker, segments in transcript.items() %}
+                    <div class="speaker-block">
+                        {% for segment in segments %}
+                            <div class="segment">
+                                <span class="speaker-name">{{ speaker }} {{ segment.timestamp }}</span>
+                                <p>{{ segment.text }}</p>
+                                <div class="audio-player">
+                                    <audio controls>
+                                        <source src="{{ url_for('static', filename=segment.audio_url.split('static/')[1]) }}" type="audio/wav">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <!-- Footer Section -->
+        <footer>
+            <p>&copy; 2024 Firepower. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript to Show Loading Spinner -->
+    <script>
+        document.querySelector("form").addEventListener("submit", function(event) {
+            // Show the loading overlay
+            document.getElementById("loading-overlay").style.display = "flex";
+        });
+    </script>
+</body>
+</html>
